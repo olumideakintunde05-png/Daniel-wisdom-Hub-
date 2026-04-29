@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DWH Wallpaper Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700;1,900&family=Space+Grotesk:wght@300;400;600;700&family=DM+Mono:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0c0c10;--bg1:#131318;--bg2:#1a1a22;
+  --p:#8b5cf6;--pk:#ec4899;--or:#f97316;
+  --txt:#f0effe;--txt2:#a09fc0;--mute:#5a5872;
+  --line:rgba(255,255,255,0.07);
+  --g:linear-gradient(135deg,#8b5cf6,#ec4899,#f97316);
+  --dp:'Playfair Display',Georgia,serif;
+  --ui:'Space Grotesk',sans-serif;
+  --mo:'DM Mono',monospace;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--txt);font-family:var(--ui);-webkit-font-smoothing:antialiased}
+
+/* ── TOP BAR ── */
+.topbar{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px;
+  background:rgba(12,12,16,.95);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:100;
+}
+.gem{
+  width:32px;height:32px;border-radius:9px;
+  background:var(--g);display:flex;align-items:center;justify-content:center;
+  font-size:15px;box-shadow:0 0 18px rgba(139,92,246,.45);flex-shrink:0;
+}
+.brand{font-weight:700;font-size:13px;background:var(--g);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.top-sub{font-size:10px;color:var(--mute);}
+
+/* ── PAGE ── */
+.page{max-width:430px;margin:0 auto;padding:16px 14px 100px;}
+
+/* ── SECTION HEADER ── */
+.sec-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 0 12px;
+}
+.sec-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.sec-badge{
+  font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;
+  border-radius:50px;border:1px solid rgba(139,92,246,.3);color:var(--p);
+}
+
+/* ── WALLPAPER CARD ── */
+.wcard{
+  position:relative;
+  border-radius:22px;
+  overflow:hidden;
+  /* 9:16 phone ratio */
+  aspect-ratio:9/16;
+  background:#0c0c10;
+  box-shadow:0 8px 40px rgba(0,0,0,.6);
+}
+
+/* Real photo background */
+.wcard-photo{
+  position:absolute;inset:0;
+  background-size:cover;
+  background-position:center;
+}
+
+/* Dark overlay — heavier towards the text area */
+.wcard-ov{
+  position:absolute;inset:0;
+}
+/* Default: heavy bottom */
+.wcard.pos-bottom .wcard-ov{
+  background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,.15) 35%,rgba(0,0,0,.6) 58%,rgba(0,0,0,.93) 100%);
+}
+/* Center: both ends dark */
+.wcard.pos-center .wcard-ov{
+  background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.3) 30%,rgba(0,0,0,.3) 70%,rgba(0,0,0,.55) 100%);
+}
+/* Top: heavy top */
+.wcard.pos-top .wcard-ov{
+  background:linear-gradient(180deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.6) 40%,rgba(0,0,0,.15) 75%,rgba(0,0,0,.1) 100%);
+}
+
+/* Gradient accent line on top */
+.wcard-accent{
+  position:absolute;top:0;left:0;right:0;height:2px;z-index:5;
+  background:linear-gradient(90deg,transparent,#8b5cf6,#ec4899,#f97316,transparent);
+  opacity:.8;
+}
+
+/* ── TEXT POSITIONING ── */
+.wcard-content{
+  position:absolute;inset:0;z-index:4;
+  display:flex;flex-direction:column;
+  padding:28px 24px;
+}
+
+/* Bottom layout */
+.wcard.pos-bottom .wcard-content{ justify-content:flex-end; }
+/* Center layout */
+.wcard.pos-center .wcard-content{ justify-content:center; }
+/* Top layout */
+.wcard.pos-top .wcard-content{ justify-content:flex-start;padding-top:40px; }
+
+/* Text alignment variants */
+.wcard.align-left  .wcard-content{ align-items:flex-start;text-align:left; }
+.wcard.align-right .wcard-content{ align-items:flex-end;text-align:right; }
+.wcard.align-center .wcard-content{ align-items:center;text-align:center; }
+
+/* ── CHIP ── */
+.w-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:50px;padding:4px 12px;
+  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(255,255,255,.55);margin-bottom:13px;
+  backdrop-filter:blur(6px);
+}
+.w-chip-dot{width:4px;height:4px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#ec4899);}
+
+/* ── QUOTE TEXT ── */
+.w-quote{
+  font-family:var(--dp);font-style:italic;font-weight:700;
+  font-size:clamp(20px,5.5vw,28px);
+  line-height:1.4;color:#fff;
+  margin-bottom:16px;
+  text-shadow:0 2px 12px rgba(0,0,0,.5);
+}
+
+/* ── DIVIDER LINE ── */
+.w-line{
+  height:2px;width:36px;border-radius:2px;
+  background:linear-gradient(90deg,#8b5cf6,#ec4899);
+  margin-bottom:10px;flex-shrink:0;
+}
+
+/* ── AUTHOR ── */
+.w-author{
+  font-family:var(--mo);font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(255,255,255,.45);
+  margin-bottom:0;
+}
+
+/* ── LOGO WATERMARK ── */
+.w-logo{
+  position:absolute;z-index:5;
+  display:flex;align-items:center;gap:5px;
+}
+.wcard.pos-bottom .w-logo,.wcard.pos-center .w-logo{ bottom:20px;right:20px; }
+.wcard.pos-top .w-logo{ bottom:20px;right:20px; }
+.wcard.align-right .w-logo{ right:auto;left:20px; }
+
+.w-gem{
+  width:18px;height:18px;border-radius:5px;
+  background:var(--g);display:flex;align-items:center;justify-content:center;
+  font-size:9px;
+}
+.w-brand{
+  font-size:9px;font-weight:700;letter-spacing:.5px;
+  background:var(--g);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* ── DOWNLOAD BTN ── */
+.dl-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:15px;
+  background:var(--g);border:none;border-radius:14px;
+  font-family:var(--ui);font-size:13px;font-weight:700;
+  color:#fff;cursor:pointer;margin-top:12px;
+  box-shadow:0 6px 24px rgba(139,92,246,.35);
+  transition:all .2s var(--ease);
+}
+.dl-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(139,92,246,.45);}
+.dl-btn:active{transform:scale(.97);}
+.dl-btn:disabled{opacity:.6;pointer-events:none;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="gem">✦</div>
+  <div>
+    <div class="brand">Daniel Wisdom Hub</div>
+    <div class="top-sub">Wallpaper Generator — tap Download to save</div>
+  </div>
+</div>
+
+<div class="page" id="page"></div>
+
+<script>
+// Real Unsplash photo IDs directly from the website source
+const PHOTOS = {
+  success: [
+    'photo-1454165804606-c3d57bc86b40',
+    'photo-1519834785169-98be25ec3f84',
+    'photo-1521737604893-d14cc237f11d',
+    'photo-1498050108023-c5249f4df085',
+    'photo-1600880292203-757bb62b4baf',
+    'photo-1553484771-898ed465e931',
+  ],
+  wisdom: [
+    'photo-1456513080510-7bf3a84b82f8',
+    'photo-1516979187457-637abb4f9353',
+    'photo-1507842217343-583bb7270b66',
+    'photo-1481627834876-b7833e8f5570',
+    'photo-1549880338-65ddcdfd017b',
+    'photo-1544716278-ca5e3f4abd8c',
+  ],
+  life: [
+    'photo-1506905925346-21bda4d32df4',
+    'photo-1493246507139-91e8fad9978e',
+    'photo-1518199266791-5375a83190b7',
+    'photo-1470252649378-9c29740c9fa8',
+    'photo-1441974231531-c6227db76b6e',
+    'photo-1501854140801-50d01698950b',
+  ],
+  proverbs: [
+    'photo-1505118380757-91f5f5632de0',
+    'photo-1500382017468-9049fed747ef',
+    'photo-1447752875215-b2761acb3c5d',
+    'photo-1459478309853-2c33a60058e7',
+    'photo-1464822759023-fed622ff2c3b',
+    'photo-1439853949212-36589f9f4d1a',
+  ],
+};
+
+// Wallpaper data: quote, author, category, which photo pool, text position, alignment
+const WALLS = [
+  {
+    cat:'Financial', emoji:'💰',
+    q:'Build wealth in silence. Let success make the noise.',
+    a:'Anonymous',
+    pool:'success', photoIdx:0,
+    pos:'bottom', align:'left',
+  },
+  {
+    cat:'Resilience', emoji:'🔥',
+    q:'You didn\'t come this far to only come this far.',
+    a:'Anonymous',
+    pool:'life', photoIdx:0,
+    pos:'center', align:'center',
+  },
+  {
+    cat:'Money', emoji:'📈',
+    q:'Rich people buy assets. Poor people buy things that look rich.',
+    a:'Robert Kiyosaki',
+    pool:'wisdom', photoIdx:0,
+    pos:'bottom', align:'right',
+  },
+  {
+    cat:'Mindset', emoji:'🧠',
+    q:'Discipline is the bridge between goals and achievement.',
+    a:'Jim Rohn',
+    pool:'proverbs', photoIdx:0,
+    pos:'top', align:'left',
+  },
+  {
+    cat:'Hustle', emoji:'⚡',
+    q:'Stop waiting for the right moment. Start now.',
+    a:'Anonymous',
+    pool:'success', photoIdx:1,
+    pos:'center', align:'center',
+  },
+  {
+    cat:'Wealth', emoji:'🌿',
+    q:'One income stream is the riskiest financial plan you can make.',
+    a:'Anonymous',
+    pool:'life', photoIdx:1,
+    pos:'bottom', align:'right',
+  },
+];
+
+const page = document.getElementById('page');
+
+WALLS.forEach((w, i) => {
+  const photoId = PHOTOS[w.pool][w.photoIdx];
+  const photoUrl = `https://images.unsplash.com/${photoId}?w=800&q=85&fit=crop&crop=center`;
+
+  // Section header
+  const head = document.createElement('div');
+  head.className = 'sec-head';
+  head.innerHTML = `<div class="sec-title">${w.emoji} ${w.cat}</div><div class="sec-badge">Wallpaper ${i+1} / ${WALLS.length}</div>`;
+  page.appendChild(head);
+
+  // Card
+  const card = document.createElement('div');
+  card.className = `wcard pos-${w.pos} align-${w.align}`;
+  card.id = `wcard${i}`;
+  card.innerHTML = `
+    <div class="wcard-photo" style="background-image:url('${photoUrl}')"></div>
+    <div class="wcard-ov"></div>
+    <div class="wcard-accent"></div>
+    <div class="wcard-content">
+      <div class="w-chip"><div class="w-chip-dot"></div>${w.cat}</div>
+      <div class="w-quote">"${w.q}"</div>
+      <div class="w-line"></div>
+      <div class="w-author">— ${w.a}</div>
+    </div>
+    <div class="w-logo">
+      <div class="w-gem">✦</div>
+      <div class="w-brand">Daniel Wisdom Hub</div>
+    </div>
+  `;
+  page.appendChild(card);
+
+  // Download button
+  const btn = document.createElement('button');
+  btn.className = 'dl-btn';
+  btn.id = `btn${i}`;
+  btn.innerHTML = `⬇&nbsp;&nbsp;Download Wallpaper ${i+1}`;
+  btn.onclick = () => downloadCard(i, w.cat);
+  page.appendChild(btn);
+});
+
+// ── Load html2canvas once, then download ──
+let h2cLoaded = false;
+function loadH2C(){
+  return new Promise(res => {
+    if(h2cLoaded){res();return;}
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload = () => { h2cLoaded = true; res(); };
+    document.head.appendChild(s);
+  });
+}
+
+async function downloadCard(idx, cat){
+  const btn = document.getElementById(`btn${idx}`);
+  btn.disabled = true;
+  btn.innerHTML = '⏳&nbsp;&nbsp;Generating…';
+
+  await loadH2C();
+
+  const el = document.getElementById(`wcard${idx}`);
+  try {
+    const canvas = await html2canvas(el, {
+      scale: 3,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#0c0c10',
+      logging: false,
+      imageTimeout: 8000,
+    });
+    const a = document.createElement('a');
+    a.download = `dwh-wallpaper-${idx+1}-${cat.toLowerCase()}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    btn.innerHTML = '✅&nbsp;&nbsp;Downloaded!';
+    setTimeout(() => {
+      btn.innerHTML = `⬇&nbsp;&nbsp;Download Wallpaper ${idx+1}`;
+      btn.disabled = false;
+    }, 2500);
+  } catch(e) {
+    btn.innerHTML = '❌&nbsp;&nbsp;Error — try again';
+    btn.disabled = false;
+    setTimeout(() => { btn.innerHTML = `⬇&nbsp;&nbsp;Download Wallpaper ${idx+1}`; }, 2500);
+  }
+}
+</script>
+</body>
+</html>

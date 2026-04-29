@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin — Daniel Wisdom Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#08080d;--bg1:#0f0f16;--bg2:#16161f;--bg3:#1e1e2a;--bg4:#252532;
+  --line:rgba(255,255,255,0.06);--line2:rgba(255,255,255,0.11);
+  --txt:#f0effe;--txt2:#a09fc0;--mute:#5a5872;
+  --p:#8b5cf6;--pk:#ec4899;--or:#f97316;
+  --g:linear-gradient(135deg,#8b5cf6,#ec4899,#f97316);
+  --green:#22c55e;--red:#ef4444;--amber:#f59e0b;
+  --r:12px;--ui:'Space Grotesk',sans-serif;--mo:'DM Mono',monospace;
+  --ease:cubic-bezier(.4,0,.2,1);--spring:cubic-bezier(.34,1.56,.64,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--txt);font-family:var(--ui);overflow:hidden;display:flex}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:var(--p);border-radius:9px}
+button,input,textarea,select{font-family:inherit}
+a{text-decoration:none;color:inherit}
+
+/* ── LOGIN ── */
+#loginScreen{
+  position:fixed;inset:0;z-index:999;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 25% 40%,rgba(139,92,246,.12),transparent 55%),
+             radial-gradient(ellipse at 75% 70%,rgba(236,72,153,.08),transparent 55%),var(--bg);
+  padding:20px;
+}
+.lcard{
+  background:var(--bg1);border:1px solid var(--line);
+  border-radius:20px;padding:36px 30px;
+  width:100%;max-width:360px;text-align:center;
+}
+.llogo{
+  font-size:20px;font-weight:700;background:var(--g);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:4px;
+}
+.lsub{color:var(--mute);font-size:13px;margin-bottom:28px}
+.lfield{text-align:left;margin-bottom:16px}
+.llabel{
+  display:block;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;
+  color:var(--mute);margin-bottom:6px;
+}
+.linput{
+  width:100%;background:var(--bg2);border:1px solid var(--line);
+  border-radius:9px;padding:11px 14px;color:var(--txt);
+  font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.linput:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(139,92,246,.15)}
+.lbtn{
+  width:100%;padding:13px;background:var(--g);border:none;
+  border-radius:9px;color:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;margin-top:6px;transition:opacity .2s,transform .15s;
+}
+.lbtn:hover{opacity:.9}:active{transform:scale(.98)}
+.lerr{color:var(--red);font-size:12px;margin-top:10px;display:none}
+.lhint{font-size:11px;color:var(--mute);margin-top:14px}
+
+/* ── SIDEBAR ── */
+#sidebar{
+  width:230px;flex-shrink:0;background:var(--bg1);
+  border-right:1px solid var(--line);display:flex;
+  flex-direction:column;height:100vh;overflow-y:auto;
+  transition:transform .3s var(--ease);
+}
+.sidebar-logo{
+  padding:20px 18px 16px;border-bottom:1px solid var(--line);
+}
+.sidebar-brand{
+  font-size:15px;font-weight:700;background:var(--g);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.sidebar-sub{font-size:11px;color:var(--mute);margin-top:2px}
+.nav-item{
+  display:flex;align-items:center;gap:11px;
+  padding:11px 18px;cursor:pointer;
+  font-size:13px;font-weight:600;color:var(--mute);
+  transition:all .18s var(--ease);margin:1px 0;
+  border-right:3px solid transparent;
+}
+.nav-item:hover{background:var(--bg2);color:var(--txt)}
+.nav-item.on{background:rgba(139,92,246,.1);color:var(--p);border-right-color:var(--p)}
+.nav-ic{font-size:17px}
+.sidebar-gap{flex:1}
+.sidebar-footer{padding:14px 18px;border-top:1px solid var(--line)}
+.back-link{
+  display:block;text-align:center;
+  font-size:12px;color:var(--mute);margin-bottom:10px;
+}
+.logout-btn{
+  width:100%;padding:9px;border-radius:8px;
+  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);
+  color:var(--red);font-size:12px;font-weight:700;cursor:pointer;
+  transition:background .2s;
+}
+.logout-btn:hover{background:rgba(239,68,68,.18)}
+
+/* ── MAIN ── */
+#main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.top-bar{
+  height:54px;display:flex;align-items:center;
+  padding:0 22px;gap:14px;border-bottom:1px solid var(--line);
+  flex-shrink:0;background:var(--bg1);
+}
+.menu-toggle{
+  display:none;background:var(--bg2);border:1px solid var(--line);
+  color:var(--txt);padding:6px 10px;border-radius:7px;cursor:pointer;font-size:16px;
+}
+.top-title{font-size:16px;font-weight:700}
+.top-actions{margin-left:auto;display:flex;gap:8px}
+.tbtn{
+  padding:7px 16px;border-radius:8px;border:none;
+  font-family:var(--ui);font-size:12px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:5px;transition:all .18s;
+}
+.tbtn:hover{opacity:.88;transform:scale(1.03)}
+.tbtn.primary{background:var(--g);color:#fff}
+.tbtn.secondary{background:var(--bg3);border:1px solid var(--line);color:var(--txt)}
+
+/* ── PAGES ── */
+.content{flex:1;overflow-y:auto;padding:22px}
+.page{display:none}.page.on{display:block}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.stat-box{
+  background:var(--bg1);border:1px solid var(--line);
+  border-radius:var(--r);padding:18px;
+}
+.stat-num{
+  font-size:26px;font-weight:800;background:var(--g);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.stat-label{font-size:12px;color:var(--mute);margin-top:3px}
+
+/* ── CARDS ── */
+.acard{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:18px}
+.acard-title{font-size:15px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:7px}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fg{margin-bottom:15px}
+.fl{
+  display:block;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;
+  color:var(--mute);margin-bottom:6px;
+}
+.fi{
+  width:100%;background:var(--bg2);border:1px solid var(--line);
+  border-radius:9px;padding:10px 13px;color:var(--txt);
+  font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.fi:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(139,92,246,.12)}
+textarea.fi{resize:vertical;min-height:84px}
+select.fi{cursor:pointer}
+.fhint{font-size:11px;color:var(--mute);margin-top:4px}
+.btn-row{display:flex;gap:9px;margin-top:4px;flex-wrap:wrap}
+.btn{
+  padding:9px 18px;border-radius:8px;font-family:var(--ui);
+  font-size:12px;font-weight:700;cursor:pointer;border:none;
+  display:flex;align-items:center;gap:5px;transition:all .18s;
+}
+.btn:hover{opacity:.88;transform:scale(1.02)}
+.btn.prim{background:var(--g);color:#fff}
+.btn.sec{background:var(--bg3);border:1px solid var(--line);color:var(--txt)}
+.btn.danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--red)}
+.btn.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:var(--green)}
+.img-preview{
+  width:100%;height:110px;border-radius:9px;
+  background-size:cover;background-position:center;
+  background-color:var(--bg3);border:2px dashed var(--line);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--mute);font-size:12px;margin-top:6px;transition:all .3s;
+  overflow:hidden;
+}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:var(--mute);
+  padding:9px 13px;text-align:left;
+  border-bottom:1px solid var(--line);white-space:nowrap;
+}
+td{
+  padding:11px 13px;font-size:13px;
+  border-bottom:1px solid var(--line);vertical-align:middle;
+}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg2)}
+.tthumb{
+  width:48px;height:38px;border-radius:6px;
+  background-size:cover;background-position:center;flex-shrink:0;
+}
+.ttext{max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+.badge{
+  display:inline-block;padding:3px 9px;border-radius:50px;
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+}
+.badge.wisdom{background:rgba(139,92,246,.15);color:var(--p)}
+.badge.life{background:rgba(34,197,94,.12);color:var(--green)}
+.badge.success{background:rgba(249,115,22,.12);color:var(--or)}
+.badge.proverbs{background:rgba(236,72,153,.12);color:var(--pk)}
+
+/* ── AI OUTPUT ── */
+.ai-out{
+  background:var(--bg2);border:1px solid var(--line);
+  border-radius:9px;padding:16px;margin-top:14px;
+  font-size:13px;line-height:1.7;display:none;
+}
+.ai-out.show{display:block}
+.gen-bar{
+  display:none;align-items:center;gap:9px;
+  color:var(--mute);font-size:13px;margin-top:12px;
+}
+.gen-bar.show{display:flex}
+.spin{
+  width:17px;height:17px;border-radius:50%;
+  border:2px solid var(--line2);border-top-color:var(--p);
+  animation:sp .7s linear infinite;
+}
+@keyframes sp{to{transform:rotate(360deg)}}
+.gen-q-list{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.gen-q-item{
+  background:var(--bg2);border:1px solid var(--line);
+  border-radius:9px;padding:12px 14px;
+  display:flex;align-items:flex-start;gap:12px;
+}
+.gen-q-body{flex:1}
+.gen-q-text{font-size:13px;font-style:italic;line-height:1.5}
+.gen-q-meta{font-size:11px;color:var(--mute);margin-top:3px}
+.gen-q-acts{display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+
+/* ── NOTIF PANEL ── */
+.notif-preview{
+  background:var(--bg3);border:1px solid var(--line);
+  border-radius:12px;padding:16px 18px;
+  display:flex;gap:12px;margin-top:16px;
+}
+.np-icon{font-size:30px}
+.np-title{font-size:14px;font-weight:700;margin-bottom:2px}
+.np-body{font-size:12px;color:var(--txt2);line-height:1.5}
+.token-list{
+  background:var(--bg2);border:1px solid var(--line);
+  border-radius:9px;padding:12px;font-family:var(--mo);
+  font-size:11px;color:var(--mute);max-height:120px;overflow-y:auto;
+  white-space:pre-wrap;word-break:break-all;
+}
+
+/* ── MODAL ── */
+#editModal{
+  position:fixed;inset:0;z-index:600;display:none;
+  align-items:center;justify-content:center;padding:20px;
+}
+#editModal.open{display:flex}
+.modal-bg{position:absolute;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px)}
+.modal-card{
+  position:relative;z-index:1;
+  background:var(--bg1);border:1px solid var(--line2);
+  border-radius:18px;padding:24px 22px;
+  width:100%;max-width:500px;max-height:90vh;overflow-y:auto;
+}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:18px}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--bg3);border:1px solid var(--line2);
+  color:var(--txt);padding:10px 20px;border-radius:50px;
+  font-size:12px;font-weight:600;
+  opacity:0;transition:all .28s var(--ease);
+  pointer-events:none;z-index:999;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);
+  transform:translateY(8px);
+}
+#toast.show{opacity:1;transform:none}
+
+/* ── CAT IMAGE MAP ── */
+.ci-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;margin-top:6px}
+.ci-item{
+  border-radius:7px;overflow:hidden;cursor:pointer;
+  border:2px solid transparent;transition:all .18s;
+  aspect-ratio:1;background-size:cover;background-position:center;
+  position:relative;
+}
+.ci-item.sel{border-color:var(--p);box-shadow:0 0 0 2px rgba(139,92,246,.35)}
+.ci-item:hover{transform:scale(1.05)}
+
+@media(max-width:768px){
+  #sidebar{position:fixed;top:0;left:0;bottom:0;z-index:50;transform:translateX(-100%)}
+  #sidebar.open{transform:none}
+  .menu-toggle{display:block}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .form-grid{grid-template-columns:1fr}
+  #main{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="lcard">
+    <div class="llogo">Daniel Wisdom Hub</div>
+    <div class="lsub">Admin Control Panel</div>
+    <div class="lfield">
+      <label class="llabel">Username</label>
+      <input class="linput" type="text" id="lu" placeholder="admin" autocomplete="username"/>
+    </div>
+    <div class="lfield">
+      <label class="llabel">Password</label>
+      <input class="linput" type="password" id="lp" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"/>
+    </div>
+    <button class="lbtn" onclick="login()">🔐 Login to Admin Panel</button>
+    <div class="lerr" id="lerr">Invalid credentials. Try: admin / admin123</div>
+    <div class="lhint">Default credentials: <b>admin</b> / <b>admin123</b></div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-brand">Daniel Wisdom Hub</div>
+    <div class="sidebar-sub">Admin Panel v3.0</div>
+  </div>
+  <div class="nav-item on" onclick="goPage('dashboard',this)"><span class="nav-ic">📊</span> Dashboard</div>
+  <div class="nav-item" onclick="goPage('addQuote',this)"><span class="nav-ic">➕</span> Add Quote</div>
+  <div class="nav-item" onclick="goPage('manageQ',this)"><span class="nav-ic">💬</span> Manage Quotes</div>
+  <div class="nav-item" onclick="goPage('addArticle',this)"><span class="nav-ic">📝</span> Add Article</div>
+  <div class="nav-item" onclick="goPage('manageA',this)"><span class="nav-ic">📖</span> Manage Articles</div>
+  <div class="nav-item" onclick="goPage('aiQuotes',this)"><span class="nav-ic">🤖</span> AI Quote Gen</div>
+  <div class="nav-item" onclick="goPage('aiArticle',this)"><span class="nav-ic">✨</span> AI Article Gen</div>
+  <div class="nav-item" onclick="goPage('notifications',this)"><span class="nav-ic">📢</span> Notifications</div>
+  <div class="sidebar-gap"></div>
+  <div class="sidebar-footer">
+    <a href="index.html" class="back-link">← Back to Site</a>
+    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+  </div>
+</div>
+
+<div id="main">
+  <div class="top-bar">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <span class="top-title" id="topTitle">Dashboard</span>
+    <div class="top-actions">
+      <a href="index.html" class="tbtn secondary">← View Site</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page on" id="page-dashboard">
+      <div class="stats-row" id="statsRow"></div>
+      <div class="acard">
+        <div class="acard-title">📋 Recent Quotes</div>
+        <div class="tbl-wrap" id="recentQ"></div>
+      </div>
+    </div>
+
+    <!-- ADD QUOTE -->
+    <div class="page" id="page-addQuote">
+      <div class="acard">
+        <div class="acard-title">➕ Add New Quote</div>
+        <div class="form-grid">
+          <div>
+            <div class="fg"><label class="fl">Quote Text *</label><textarea class="fi" id="aq-text" placeholder="Enter the quote…"></textarea></div>
+            <div class="fg"><label class="fl">Author *</label><input class="fi" type="text" id="aq-author" placeholder="e.g. Mark Twain"/></div>
+            <div class="fg">
+              <label class="fl">Category *</label>
+              <select class="fi" id="aq-cat">
+                <option value="wisdom">Wisdom</option>
+                <option value="life">Life</option>
+                <option value="success">Success</option>
+                <option value="proverbs">Proverbs</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div class="fg">
+              <label class="fl">Main Image URL *</label>
+              <input class="fi" type="text" id="aq-img" placeholder="https://…" oninput="previewImg(this.value,'aq-prev')"/>
+              <div class="img-preview" id="aq-prev">Image preview</div>
+            </div>
+            <div class="fg"><label class="fl">BG Option 2</label><input class="fi" type="text" id="aq-bg2" placeholder="https://…"/></div>
+            <div class="fg"><label class="fl">BG Option 3</label><input class="fi" type="text" id="aq-bg3" placeholder="https://…"/></div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn prim" onclick="addQuote()">💾 Save Quote</button>
+          <button class="btn sec" onclick="clearQForm()">🗑️ Clear Form</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANAGE QUOTES -->
+    <div class="page" id="page-manageQ">
+      <div class="acard">
+        <div class="acard-title">💬 Manage Quotes</div>
+        <div class="fg" style="margin-bottom:14px">
+          <input class="fi" type="text" id="qSearch" placeholder="🔍 Search quotes…" oninput="filterQTable(this.value)"/>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Image</th><th>Quote</th><th>Author</th><th>Category</th><th>Actions</th></tr></thead>
+            <tbody id="qTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD ARTICLE -->
+    <div class="page" id="page-addArticle">
+      <div class="acard">
+        <div class="acard-title">📝 Add New Article</div>
+        <div class="form-grid">
+          <div>
+            <div class="fg"><label class="fl">Title *</label><input class="fi" type="text" id="aa-title" placeholder="Article title…"/></div>
+            <div class="fg">
+              <label class="fl">Category</label>
+              <select class="fi" id="aa-cat">
+                <option value="wisdom">Wisdom</option>
+                <option value="life">Life</option>
+                <option value="success">Success</option>
+                <option value="proverbs">Proverbs</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Preview *</label><textarea class="fi" id="aa-preview" placeholder="Short excerpt…" style="min-height:68px"></textarea></div>
+          </div>
+          <div>
+            <div class="fg">
+              <label class="fl">Cover Image URL</label>
+              <input class="fi" type="text" id="aa-img" placeholder="https://…" oninput="previewImg(this.value,'aa-prev')"/>
+              <div class="img-preview" id="aa-prev">Image preview</div>
+            </div>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Content (HTML)</label>
+          <textarea class="fi" id="aa-content" style="min-height:160px" placeholder="&lt;h3&gt;Section&lt;/h3&gt;&lt;p&gt;Content…&lt;/p&gt;"></textarea>
+          <div class="fhint">Use &lt;h3&gt; for headings, &lt;p&gt; for paragraphs</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn prim" onclick="addArticle()">📤 Publish Article</button>
+          <button class="btn sec" onclick="clearAForm()">🗑️ Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANAGE ARTICLES -->
+    <div class="page" id="page-manageA">
+      <div class="acard">
+        <div class="acard-title">📖 Manage Articles</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Actions</th></tr></thead>
+            <tbody id="aTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI QUOTES -->
+    <div class="page" id="page-aiQuotes">
+      <div class="acard">
+        <div class="acard-title">🤖 AI Quote Generator</div>
+        <div class="form-grid">
+          <div class="fg">
+            <label class="fl">Topic / Theme *</label>
+            <input class="fi" type="text" id="ai-topic" placeholder="e.g. resilience, hustle, love, gratitude…"/>
+          </div>
+          <div class="fg">
+            <label class="fl">Category</label>
+            <select class="fi" id="ai-cat">
+              <option value="wisdom">Wisdom</option>
+              <option value="life">Life</option>
+              <option value="success">Success</option>
+              <option value="proverbs">Proverbs</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Number of Quotes</label>
+          <select class="fi" id="ai-count">
+            <option value="5">5 quotes</option>
+            <option value="8">8 quotes</option>
+            <option value="10" selected>10 quotes</option>
+          </select>
+        </div>
+        <div class="btn-row">
+          <button class="btn prim" onclick="genQuotes()">✨ Generate Quotes</button>
+        </div>
+        <div class="gen-bar" id="gen-q-bar"><div class="spin"></div> AI is crafting viral quotes…</div>
+        <div id="gen-q-results"></div>
+      </div>
+    </div>
+
+    <!-- AI ARTICLE -->
+    <div class="page" id="page-aiArticle">
+      <div class="acard">
+        <div class="acard-title">✨ AI Article Generator</div>
+        <div class="form-grid">
+          <div class="fg">
+            <label class="fl">Article Topic *</label>
+            <input class="fi" type="text" id="ai-art-topic" placeholder="e.g. morning routines of billionaires…"/>
+          </div>
+          <div class="fg">
+            <label class="fl">Category</label>
+            <select class="fi" id="ai-art-cat">
+              <option value="wisdom">Wisdom</option>
+              <option value="life">Life</option>
+              <option value="success">Success</option>
+              <option value="proverbs">Proverbs</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn prim" onclick="genArticle()">✨ Generate Article</button>
+        </div>
+        <div class="gen-bar" id="gen-a-bar"><div class="spin"></div> AI is writing your article…</div>
+        <div id="gen-a-result"></div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="page" id="page-notifications">
+      <div class="acard">
+        <div class="acard-title">📢 Send Notification</div>
+        <div class="fg"><label class="fl">Title</label><input class="fi" type="text" id="nt-title" value="Daniel Wisdom Hub ✨" placeholder="Notification title"/></div>
+        <div class="fg"><label class="fl">Message</label><textarea class="fi" id="nt-body" placeholder="Enter your message…" style="min-height:72px"></textarea></div>
+        <div class="fg"><label class="fl">Link (optional)</label><input class="fi" type="text" id="nt-url" value="/" placeholder="/"/></div>
+        <div class="btn-row">
+          <button class="btn prim" onclick="sendNotif()">📢 Send to All Users</button>
+          <button class="btn sec" onclick="previewNotif()">👁 Preview</button>
+        </div>
+        <div id="notif-preview-wrap"></div>
+        <div class="acard-title" style="margin-top:22px">📦 Stored Tokens</div>
+        <div class="token-list" id="tokenList">No push subscription tokens stored yet.</div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn danger" onclick="clearTokens()">🗑️ Clear All Tokens</button>
+          <button class="btn sec" onclick="refreshTokens()">🔄 Refresh</button>
+        </div>
+        <div class="fg" style="margin-top:18px">
+          <label class="fl">Notification Schedule</label>
+          <div style="background:var(--bg3);border-radius:9px;padding:13px;font-size:12px;color:var(--txt2);line-height:1.7">
+            ⏰ Daily notifications fire at <b>8:00 AM</b> local time for subscribed users.<br/>
+            📦 Push tokens are stored in localStorage (upgrade to a backend DB for production).<br/>
+            🛡️ Max 2 notifications per day enforced — no spam.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- EDIT MODAL -->
+<div id="editModal">
+  <div class="modal-bg" onclick="closeModal()"></div>
+  <div class="modal-card">
+    <div class="modal-title" id="modalTitle">Edit</div>
+    <div id="modalBody"></div>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn prim" id="modalSave">💾 Save Changes</button>
+      <button class="btn sec" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════ AUTH ═══════════════════════ */
+const CREDS = { user: 'admin', pass: 'admin123' };
+
+function login() {
+  const u = document.getElementById('lu').value.trim();
+  const p = document.getElementById('lp').value;
+  if (u === CREDS.user && p === CREDS.pass) {
+    localStorage.setItem('dwh_admin', '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    initAdmin();
+  } else {
+    document.getElementById('lerr').style.display = 'block';
+  }
+}
+function logout() { localStorage.removeItem('dwh_admin'); location.reload(); }
+function checkAuth() {
+  if (localStorage.getItem('dwh_admin') === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    initAdmin();
+  }
+}
+
+/* ═══════════════════════ DATA ═══════════════════════ */
+const DEFAULT_Q = [
+  {id:1,q:"The secret of getting ahead is getting started.",a:"Mark Twain",cat:"success",img:"https://images.unsplash.com/photo-1519834785169-98be25ec3f84?w=600&q=80",bgOptions:["https://images.unsplash.com/photo-1519834785169-98be25ec3f84?w=600&q=80","https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=80"]},
+  {id:2,q:"It does not matter how slowly you go as long as you do not stop.",a:"Confucius",cat:"wisdom",img:"https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80",bgOptions:["https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80"]},
+  {id:3,q:"Life is what happens when you're busy making other plans.",a:"John Lennon",cat:"life",img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",bgOptions:["https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80"]},
+  {id:4,q:"A smooth sea never made a skilled sailor.",a:"African Proverb",cat:"proverbs",img:"https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=600&q=80",bgOptions:["https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=600&q=80"]},
+  {id:5,q:"Strive not to be a success, but rather to be of value.",a:"Albert Einstein",cat:"success",img:"https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80",bgOptions:["https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80"]},
+];
+const DEFAULT_A = [
+  {id:1,cat:"wisdom",title:"10 Ancient Wisdom Principles That Still Work Today",preview:"From Stoic philosophy to Confucian thought, these timeless principles guide modern life.",img:"https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80",content:"<h3>Introduction</h3><p>Ancient wisdom endures because it speaks to the unchanging core of human experience.</p>"},
+  {id:2,cat:"success",title:"The Science of Daily Habits",preview:"Research shows 45% of our actions are habits. Here is how to wire the right ones.",img:"https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80",content:"<h3>Why Habits Beat Willpower</h3><p>Willpower is finite. Habits run on autopilot.</p>"},
+];
+
+let Q = [], A = [];
+let editingId = null, editingType = null;
+let generatedQ = [];
+
+function loadData() {
+  try { Q = JSON.parse(localStorage.getItem('dwh_q') || 'null') || DEFAULT_Q; } catch { Q = DEFAULT_Q; }
+  try { A = JSON.parse(localStorage.getItem('dwh_a') || 'null') || DEFAULT_A; } catch { A = DEFAULT_A; }
+}
+function saveData() {
+  localStorage.setItem('dwh_q', JSON.stringify(Q));
+  localStorage.setItem('dwh_a', JSON.stringify(A));
+}
+
+/* ═══════════════════════ NAV ═══════════════════════ */
+function goPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('on'));
+  document.getElementById('page-' + id).classList.add('on');
+  if (el) el.classList.add('on');
+  const titles = { dashboard:'Dashboard', addQuote:'Add Quote', manageQ:'Manage Quotes', addArticle:'Add Article', manageA:'Manage Articles', aiQuotes:'AI Quote Generator', aiArticle:'AI Article Generator', notifications:'Notifications' };
+  document.getElementById('topTitle').textContent = titles[id] || id;
+  refresh(id);
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function refresh(id) {
+  if (id === 'dashboard') renderDash();
+  else if (id === 'manageQ') renderQTable();
+  else if (id === 'manageA') renderATable();
+  else if (id === 'notifications') refreshTokens();
+}
+
+/* ═══════════════════════ DASHBOARD ═══════════════════════ */
+function renderDash() {
+  const liked = JSON.parse(localStorage.getItem('dwh_sv') || '[]').length;
+  document.getElementById('statsRow').innerHTML = [
+    { n: Q.length, l: '📝 Total Quotes' },
+    { n: A.length, l: '📖 Articles' },
+    { n: liked, l: '🔖 User Saved' },
+    { n: JSON.parse(localStorage.getItem('dwh_tokens')||'[]').length, l: '📲 Push Tokens' },
+  ].map(s => `<div class="stat-box"><div class="stat-num">${s.n}</div><div class="stat-label">${s.l}</div></div>`).join('');
+
+  document.getElementById('recentQ').innerHTML = `<table><thead><tr><th>Quote</th><th>Author</th><th>Category</th></tr></thead><tbody>${
+    [...Q].reverse().slice(0,6).map(q => `<tr>
+      <td><div class="ttext">"${q.q}"</div></td>
+      <td>${q.a}</td>
+      <td><span class="badge ${q.cat}">${q.cat}</span></td>
+    </tr>`).join('')
+  }</tbody></table>`;
+}
+
+/* ═══════════════════════ ADD QUOTE ═══════════════════════ */
+function addQuote() {
+  const text = document.getElementById('aq-text').value.trim();
+  const author = document.getElementById('aq-author').value.trim();
+  const cat = document.getElementById('aq-cat').value;
+  const img = document.getElementById('aq-img').value.trim();
+  const bg2 = document.getElementById('aq-bg2').value.trim();
+  const bg3 = document.getElementById('aq-bg3').value.trim();
+  if (!text || !author) { toast('⚠️ Quote text and author are required'); return; }
+  const bgOptions = [img || `https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80`, ...(bg2?[bg2]:[]), ...(bg3?[bg3]:[])];
+  Q.push({ id: Date.now(), q: text, a: author, cat, img: bgOptions[0], bgOptions });
+  saveData();
+  toast('✅ Quote saved to site!');
+  clearQForm();
+}
+function clearQForm() {
+  ['aq-text','aq-author','aq-img','aq-bg2','aq-bg3'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  const p=document.getElementById('aq-prev'); if(p){p.style.backgroundImage='';p.textContent='Image preview';}
+}
+
+/* ═══════════════════════ ADD ARTICLE ═══════════════════════ */
+function addArticle() {
+  const title = document.getElementById('aa-title').value.trim();
+  const preview = document.getElementById('aa-preview').value.trim();
+  const content = document.getElementById('aa-content').value.trim();
+  const img = document.getElementById('aa-img').value.trim();
+  const cat = document.getElementById('aa-cat').value;
+  if (!title || !preview) { toast('⚠️ Title and preview are required'); return; }
+  A.push({ id: Date.now(), title, preview, content, cat, img: img || 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80' });
+  saveData();
+  toast('📤 Article published!');
+  clearAForm();
+}
+function clearAForm() {
+  ['aa-title','aa-preview','aa-content','aa-img'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  const p=document.getElementById('aa-prev'); if(p){p.style.backgroundImage='';p.textContent='Image preview';}
+}
+
+/* ═══════════════════════ MANAGE QUOTES ═══════════════════════ */
+function renderQTable(filter = '') {
+  const list = filter ? Q.filter(q => q.q.toLowerCase().includes(filter) || q.a.toLowerCase().includes(filter)) : Q;
+  document.getElementById('qTableBody').innerHTML = list.map(q => `<tr>
+    <td><div class="tthumb" style="background-image:url('${q.img||''}')"></div></td>
+    <td><div class="ttext" title="${q.q}">"${q.q}"</div></td>
+    <td>${q.a}</td>
+    <td><span class="badge ${q.cat}">${q.cat}</span></td>
+    <td><div style="display:flex;gap:6px">
+      <button class="btn success" style="font-size:10px;padding:5px 10px" onclick="editQuote(${q.id})">✏️ Edit</button>
+      <button class="btn danger" style="font-size:10px;padding:5px 10px" onclick="deleteQuote(${q.id})">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+}
+function filterQTable(v) { renderQTable(v.toLowerCase()); }
+
+function deleteQuote(id) {
+  if (!confirm('Delete this quote?')) return;
+  Q = Q.filter(q => q.id !== id);
+  saveData(); renderQTable();
+  toast('🗑️ Quote deleted');
+}
+
+function editQuote(id) {
+  const q = Q.find(q => q.id === id); if (!q) return;
+  editingId = id; editingType = 'quote';
+  document.getElementById('modalTitle').textContent = '✏️ Edit Quote';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="fg"><label class="fl">Quote Text</label><textarea class="fi" id="em-q" style="min-height:72px">${q.q}</textarea></div>
+    <div class="fg"><label class="fl">Author</label><input class="fi" type="text" id="em-a" value="${q.a}"/></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi" id="em-cat">${['wisdom','life','success','proverbs'].map(c=>`<option value="${c}"${q.cat===c?' selected':''}>${c.charAt(0).toUpperCase()+c.slice(1)}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Image URL</label><input class="fi" type="text" id="em-img" value="${q.img||''}"/></div>`;
+  document.getElementById('modalSave').onclick = () => {
+    q.q = document.getElementById('em-q').value.trim();
+    q.a = document.getElementById('em-a').value.trim();
+    q.cat = document.getElementById('em-cat').value;
+    const ni = document.getElementById('em-img').value.trim();
+    if (ni) { q.img = ni; if (!q.bgOptions) q.bgOptions = []; if (!q.bgOptions.includes(ni)) q.bgOptions.unshift(ni); }
+    saveData(); closeModal(); renderQTable();
+    toast('✅ Quote updated!');
+  };
+  document.getElementById('editModal').classList.add('open');
+}
+
+/* ═══════════════════════ MANAGE ARTICLES ═══════════════════════ */
+function renderATable() {
+  document.getElementById('aTableBody').innerHTML = A.map(a => `<tr>
+    <td><div class="tthumb" style="background-image:url('${a.img||''}')"></div></td>
+    <td><div class="ttext" title="${a.title}">${a.title}</div></td>
+    <td><span class="badge ${a.cat}">${a.cat}</span></td>
+    <td><div style="display:flex;gap:6px">
+      <button class="btn success" style="font-size:10px;padding:5px 10px" onclick="editArticle(${a.id})">✏️ Edit</button>
+      <button class="btn danger" style="font-size:10px;padding:5px 10px" onclick="deleteArticle(${a.id})">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function deleteArticle(id) {
+  if (!confirm('Delete this article?')) return;
+  A = A.filter(a => a.id !== id);
+  saveData(); renderATable();
+  toast('🗑️ Article deleted');
+}
+
+function editArticle(id) {
+  const a = A.find(a => a.id === id); if (!a) return;
+  editingId = id; editingType = 'article';
+  document.getElementById('modalTitle').textContent = '✏️ Edit Article';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="fg"><label class="fl">Title</label><input class="fi" type="text" id="em-title" value="${a.title}"/></div>
+    <div class="fg"><label class="fl">Preview</label><textarea class="fi" id="em-prev" style="min-height:60px">${a.preview}</textarea></div>
+    <div class="fg"><label class="fl">Image URL</label><input class="fi" type="text" id="em-img" value="${a.img||''}"/></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi" id="em-cat">${['wisdom','life','success','proverbs'].map(c=>`<option value="${c}"${a.cat===c?' selected':''}>${c.charAt(0).toUpperCase()+c.slice(1)}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Content (HTML)</label><textarea class="fi" id="em-content" style="min-height:110px">${a.content||''}</textarea></div>`;
+  document.getElementById('modalSave').onclick = () => {
+    a.title = document.getElementById('em-title').value.trim();
+    a.preview = document.getElementById('em-prev').value.trim();
+    a.img = document.getElementById('em-img').value.trim();
+    a.cat = document.getElementById('em-cat').value;
+    a.content = document.getElementById('em-content').value;
+    saveData(); closeModal(); renderATable();
+    toast('✅ Article updated!');
+  };
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('editModal').classList.remove('open'); }
+
+/* ═══════════════════════ IMAGE PREVIEW ═══════════════════════ */
+function previewImg(url, targetId) {
+  const el = document.getElementById(targetId);
+  if (!el) return;
+  if (!url) { el.style.backgroundImage = ''; el.textContent = 'Image preview'; return; }
+  el.style.backgroundImage = `url('${url}')`;
+  el.textContent = '';
+}
+
+/* ═══════════════════════ AI QUOTE GENERATOR ═══════════════════════ */
+const CAT_IMGS = {
+  wisdom: ['photo-1456513080510-7bf3a84b82f8','photo-1516979187457-637abb4f9353','photo-1524995997946-a1c2e315a42f','photo-1481627834876-b7833e8f5570'].map(p=>`https://images.unsplash.com/${p}?w=900&q=80`),
+  life: ['photo-1506905925346-21bda4d32df4','photo-1445294211564-3ca59d999abd','photo-1500375592092-40eb2168fd21','photo-1476041800959-2f6bb412c8ce'].map(p=>`https://images.unsplash.com/${p}?w=900&q=80`),
+  success: ['photo-1454165804606-c3d57bc86b40','photo-1519834785169-98be25ec3f84','photo-1553484771-898ed465e931','photo-1552664730-d307ca884978'].map(p=>`https://images.unsplash.com/${p}?w=900&q=80`),
+  proverbs: ['photo-1505118380757-91f5f5632de0','photo-1500382017468-9049fed747ef','photo-1508193638397-1c4234db14d8','photo-1475924156734-496f6cac6ec1'].map(p=>`https://images.unsplash.com/${p}?w=900&q=80`),
+};
+
+async function genQuotes() {
+  const topic = document.getElementById('ai-topic').value.trim();
+  const cat = document.getElementById('ai-cat').value;
+  const count = document.getElementById('ai-count').value;
+  if (!topic) { toast('⚠️ Enter a topic first'); return; }
+  document.getElementById('gen-q-bar').classList.add('show');
+  document.getElementById('gen-q-results').innerHTML = '';
+  generatedQ = [];
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content:
+          `Generate ${count} powerful, emotionally resonant, viral motivational quotes about "${topic}" for a platform called Daniel Wisdom Hub. Category: ${cat}.
+Return ONLY a valid JSON array — no markdown, no backticks, no extra text:
+[{"q":"quote text","a":"Author Name"},...]
+Rules:
+- Punchy, shareable, original — NOT clichéd
+- Mix short (<15 words) and medium length
+- Realistic author names or "Daniel Wisdom Hub"
+- Specific imagery and emotion, not generic advice` }]
+      })
+    });
+    const data = await res.json();
+    let text = data.content.map(b => b.text || '').join('').replace(/```json|```/g,'').trim();
+    generatedQ = JSON.parse(text);
+    renderGenQuotes(generatedQ, cat);
+  } catch {
+    generatedQ = fallbackQuotes(topic, count);
+    renderGenQuotes(generatedQ, cat);
+  }
+  document.getElementById('gen-q-bar').classList.remove('show');
+}
+
+function fallbackQuotes(topic, n) {
+  const tpl = [
+    `The secret of ${topic} is simpler than you think — and harder than you imagine.`,
+    `${topic.charAt(0).toUpperCase()+topic.slice(1)} is not something you find. It is something you build, daily.`,
+    `What you call struggle, time will call the foundation of your ${topic}.`,
+    `Every person who mastered ${topic} first failed at it spectacularly.`,
+    `${topic.charAt(0).toUpperCase()+topic.slice(1)}: the gap between who you are and who you choose to become.`,
+    `The path to ${topic} is paved with the habits you build when no one is watching.`,
+    `Do not wait for perfect conditions for ${topic}. Create them.`,
+    `${topic.charAt(0).toUpperCase()+topic.slice(1)} belongs to those who refuse to stop learning.`,
+    `In the pursuit of ${topic}, consistency is the rarest superpower.`,
+    `Your relationship with ${topic} defines the quality of your entire life.`,
+  ];
+  return tpl.slice(0, parseInt(n)).map((q, i) => ({ q, a: ['Daniel Wisdom Hub','Marcus Stone','Amara Nwosu','Wisdom Hub','Daniel Akintunde'][i % 5] }));
+}
+
+function renderGenQuotes(quotes, cat) {
+  const imgs = CAT_IMGS[cat] || CAT_IMGS.wisdom;
+  document.getElementById('gen-q-results').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 10px">
+      <span style="font-size:13px;font-weight:700;color:var(--green)">✅ ${quotes.length} quotes generated</span>
+      <button class="btn prim" style="font-size:11px" onclick="addAllGenQ('${cat}')">➕ Add All to Site</button>
+    </div>
+    <div class="gen-q-list">${quotes.map((q,i) => `
+      <div class="gen-q-item" id="gqi${i}">
+        <div class="gen-q-body">
+          <div class="gen-q-text">"${q.q}"</div>
+          <div class="gen-q-meta">— ${q.a}</div>
+        </div>
+        <div class="gen-q-acts">
+          <button class="btn success" style="font-size:10px;padding:5px 9px;white-space:nowrap" onclick="addOneGenQ(${i},'${cat}')">➕ Add</button>
+          <button class="btn danger" style="font-size:10px;padding:5px 9px" onclick="removeGenQ(${i})">✕</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+
+function addOneGenQ(i, cat) {
+  const q = generatedQ[i]; if (!q) return;
+  const imgs = CAT_IMGS[cat] || CAT_IMGS.wisdom;
+  const img = imgs[i % imgs.length];
+  Q.push({ id: Date.now() + i, q: q.q, a: q.a, cat, img, bgOptions: imgs });
+  saveData();
+  const el = document.getElementById('gqi' + i);
+  if (el) { el.style.opacity = '.4'; el.querySelector('.btn.success').textContent = '✅ Added'; }
+  toast('✅ Quote added to site!');
+}
+
+function addAllGenQ(cat) {
+  const imgs = CAT_IMGS[cat] || CAT_IMGS.wisdom;
+  generatedQ.forEach((q, i) => {
+    Q.push({ id: Date.now() + i, q: q.q, a: q.a, cat, img: imgs[i % imgs.length], bgOptions: imgs });
+  });
+  saveData();
+  document.getElementById('gen-q-results').innerHTML = `<div style="text-align:center;padding:20px;color:var(--green);font-weight:700">✅ All ${generatedQ.length} quotes published to site!</div>`;
+  toast(`✅ ${generatedQ.length} quotes added!`);
+}
+
+function removeGenQ(i) {
+  document.getElementById('gqi' + i)?.remove();
+  generatedQ[i] = null;
+}
+
+/* ═══════════════════════ AI ARTICLE GENERATOR ═══════════════════════ */
+async function genArticle() {
+  const topic = document.getElementById('ai-art-topic').value.trim();
+  const cat = document.getElementById('ai-art-cat').value;
+  if (!topic) { toast('⚠️ Enter a topic first'); return; }
+  document.getElementById('gen-a-bar').classList.add('show');
+  document.getElementById('gen-a-result').innerHTML = '';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content:
+          `Write a compelling motivational article for "Daniel Wisdom Hub" about: "${topic}". Category: ${cat}.
+Return ONLY valid JSON — no markdown, no backticks:
+{"title":"Article title","preview":"2-sentence hook","content":"<h3>Section</h3><p>Content...</p><h3>Section 2</h3><p>...</p><h3>Conclusion</h3><p>...</p>"}
+Requirements: 3-4 sections, inspiring and actionable, 400-600 words, avoid generic advice.` }]
+      })
+    });
+    const data = await res.json();
+    let text = data.content.map(b => b.text || '').join('').replace(/```json|```/g,'').trim();
+    const art = JSON.parse(text);
+    showGenArticle(art, cat);
+  } catch {
+    showGenArticle({
+      title: `The Complete Guide to ${topic.charAt(0).toUpperCase()+topic.slice(1)}`,
+      preview: `Discover the transformative power of ${topic} and how it can permanently shift your trajectory.`,
+      content: `<h3>Understanding ${topic}</h3><p>In a world of endless distraction, ${topic} stands as one of the most reliable anchors for meaningful living. Those who understand it move differently through the world.</p><h3>The Daily Practice</h3><p>The secret most miss is that ${topic} is not an event — it is a practice. Like a muscle, it grows through deliberate, consistent use. Begin with five minutes each morning.</p><h3>Overcoming Resistance</h3><p>Every person who has mastered ${topic} has faced profound internal resistance. The mind creates elaborate reasons to stop. Recognize these as signs you are close to a breakthrough.</p><h3>Conclusion</h3><p>The path of ${topic} is not always comfortable. But comfort was never the goal. Transformation is. Begin today — imperfectly, boldly.</p>`
+    }, cat);
+  }
+  document.getElementById('gen-a-bar').classList.remove('show');
+}
+
+function showGenArticle(art, cat) {
+  const img = (CAT_IMGS[cat]||CAT_IMGS.wisdom)[0];
+  const container = document.getElementById('gen-a-result');
+  container.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:14px">
+      <div style="height:130px;background:url('${img}') center/cover"></div>
+      <div style="padding:18px">
+        <span class="badge ${cat}">${cat}</span>
+        <h3 style="font-size:17px;font-weight:700;margin:10px 0 8px">${art.title}</h3>
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:14px">${art.preview}</p>
+        <div style="font-size:13px;line-height:1.75;color:var(--txt2)">${art.content}</div>
+        <div class="btn-row" style="margin-top:14px">
+          <button class="btn prim" onclick="publishGenArticle('${encodeURIComponent(JSON.stringify(art))}','${cat}','${img}')">📤 Publish to Site</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function publishGenArticle(encoded, cat, img) {
+  try {
+    const art = JSON.parse(decodeURIComponent(encoded));
+    A.push({ id: Date.now(), title: art.title, preview: art.preview, content: art.content, cat, img });
+    saveData();
+    document.getElementById('gen-a-result').innerHTML = `<div style="text-align:center;padding:20px;color:var(--green);font-weight:700">✅ Article published to site!</div>`;
+    toast('📤 Article published!');
+  } catch { toast('❌ Could not publish — please try again'); }
+}
+
+/* ═══════════════════════ NOTIFICATIONS ═══════════════════════ */
+function refreshTokens() {
+  const tokens = JSON.parse(localStorage.getItem('dwh_tokens') || '[]');
+  const el = document.getElementById('tokenList');
+  if (!el) return;
+  if (!tokens.length) { el.textContent = 'No push subscription tokens stored yet.\n\nTokens appear here when users subscribe on the main site.'; return; }
+  el.textContent = tokens.map((t, i) => `Token ${i+1} (${t.date}):\n${t.token}`).join('\n\n');
+}
+
+function clearTokens() {
+  if (!confirm('Clear all push tokens?')) return;
+  localStorage.removeItem('dwh_tokens');
+  refreshTokens();
+  toast('🗑️ Tokens cleared');
+}
+
+function previewNotif() {
+  const title = document.getElementById('nt-title').value || 'Daniel Wisdom Hub ✨';
+  const body = document.getElementById('nt-body').value || 'Your daily wisdom quote is ready.';
+  document.getElementById('notif-preview-wrap').innerHTML = `
+    <div class="notif-preview">
+      <div class="np-icon">🔔</div>
+      <div>
+        <div class="np-title">${title}</div>
+        <div class="np-body">${body}</div>
+      </div>
+    </div>`;
+}
+
+function sendNotif() {
+  const title = document.getElementById('nt-title').value || 'Daniel Wisdom Hub ✨';
+  const body = document.getElementById('nt-body').value;
+  if (!body) { toast('⚠️ Enter a message first'); return; }
+  // Try via SW
+  if ('serviceWorker' in navigator && Notification.permission === 'granted') {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification(title, { body, tag: 'dwh-admin', data: { url: document.getElementById('nt-url').value || '/' } });
+      toast('📢 Notification sent!');
+    }).catch(() => {
+      new Notification(title, { body });
+      toast('📢 Notification sent (fallback)!');
+    });
+  } else if (Notification.permission === 'granted') {
+    new Notification(title, { body });
+    toast('📢 Notification sent!');
+  } else {
+    Notification.requestPermission().then(p => {
+      if (p === 'granted') { new Notification(title, { body }); toast('📢 Sent!'); }
+      else toast('❌ Notification permission denied');
+    });
+  }
+}
+
+/* ═══════════════════════ TOAST ═══════════════════════ */
+let tt;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2700);
+}
+
+/* ═══════════════════════ INIT ═══════════════════════ */
+function initAdmin() {
+  loadData();
+  renderDash();
+  renderQTable();
+  renderATable();
+  refreshTokens();
+}
+
+checkAuth();
+</script>
+</body>
+</html>
